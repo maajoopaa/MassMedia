@@ -1,0 +1,75 @@
+﻿@{
+    ViewData["Title"] = "Вход";
+}
+
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+
+        .form-floating > label {
+            color: #bbb;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+        <div class="card bg-dark text-light shadow-lg p-4" style="width: 100%; max-width: 400px;">
+            <h2 class="text-center mb-4">
+                Вход
+            </h2>
+
+            <div id="login-error" class="alert alert-danger d-none" role="alert"></div>
+
+            <form id="login-form">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control bg-dark text-light border-secondary" id="email" name="email" placeholder="Почта" required>
+                    <label for="username">Почта</label>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input type="password" class="form-control bg-dark text-light border-secondary" id="password" name="password" placeholder="Пароль" required>
+                    <label for="password">Пароль</label>
+                </div>
+
+                <button type="submit" class="btn btn-outline-light w-100">Войти</button>
+            </form>
+
+            <div class="text-center mt-3">
+                <a href="/Account/Register" class="text-decoration-none text-info">Нет аккаунта? Зарегистрироваться</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("login-form").addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            const errorDiv = document.getElementById("login-error");
+
+            const response = await fetch("/Account/Login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ email, password })
+            });
+
+            if (response.ok) {
+                window.location.href = "/";
+            } else {
+                const error = await response.text();
+                errorDiv.classList.remove("d-none");
+                errorDiv.textContent = "Ошибка входа. Перепроверьте данные.";
+            }
+        });
+    </script>
+</body>

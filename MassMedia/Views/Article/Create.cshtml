@@ -1,0 +1,130 @@
+﻿@{
+    ViewData["Title"] = "Создание новости";
+}
+
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+    <style>
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+
+        .form-floating > label {
+            color: #bbb;
+        }
+
+        .autocomplete-suggestions {
+            background-color: #1f1f1f;
+            border: 1px solid #333;
+            border-radius: 0.5rem;
+            max-height: 150px;
+            overflow-y: auto;
+            position: absolute;
+            z-index: 1000;
+            width: 100%;
+        }
+
+        .autocomplete-suggestion {
+            padding: 0.5rem;
+            cursor: pointer;
+        }
+
+        .autocomplete-suggestion:hover {
+            background-color: #333;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="d-flex justify-content-center align-items-center" style="min-height: 90vh;">
+        <div class="card bg-dark text-light shadow-lg p-4 w-100" style="max-width: 700px;">
+            <h2 class="text-center mb-4">Создание новости</h2>
+
+            <form id="article-form">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control bg-dark text-light border-secondary" minlength="6" id="title" placeholder="Заголовок" required>
+                    <label for="title">Заголовок</label>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <textarea class="form-control bg-dark text-light border-secondary" placeholder="Содержание" minlength="10" id="body" style="height: 150px" required></textarea>
+                    <label for="body">Содержание</label>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control bg-dark text-light border-secondary" id="imageUrl" placeholder="Ссылка на изображение">
+                    <label for="imageUrl">Ссылка на изображение</label>
+                </div>
+
+                <div class="mb-3 position-relative">
+                    <label for="station-search" class="form-label">Станция для публикации</label>
+                    <input type="text" class="form-control bg-dark text-light border-secondary" id="station-search" autocomplete="off" required placeholder="Введите название станции...">
+                    <div id="station-autocomplete" class="autocomplete-suggestions"></div>
+                </div>
+
+                <input type="hidden" id="station-id" />
+
+                <button type="submit" class="btn btn-outline-light w-100">Опубликовать</button>
+            </form>
+
+            <div class="text-center mt-3">
+                <a href="/" class="text-decoration-none text-info">Назад</a>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const stationInput = document.getElementById("station-search");
+        const stationList = document.getElementById("station-autocomplete");
+        const stationIdInput = document.getElementById("station-id");
+
+        stationInput.addEventListener("input", async () => {
+            const query = stationInput.value.trim();
+            stationList.innerHTML = "";
+
+            if (query.length < 2) return;
+
+            const response = await fetch(`/Mass-Media/Search/${query}`);
+            if (!response.ok) return;
+
+            const stations = await response.json();
+
+            stations.forEach(station => {
+                const div = document.createElement("div");
+                div.className = "autocomplete-suggestion";
+                div.textContent = station.title;
+                div.addEventListener("click", () => {
+                    stationInput.value = station.title;
+                    stationIdInput.value = station.id;
+                    stationList.innerHTML = "";
+                });
+                stationList.appendChild(div);
+            });
+        });
+
+        document.getElementById("article-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const head = document.getElementById("title").value;
+            const body = document.getElementById("body").value;
+            const imageUrl = document.getElementById("imageUrl").value;
+            const publishPlaceId = document.getElementById("station-id").value;
+
+            const response = await fetch("/Article", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ head, body, imageUrl, publishPlaceId })
+            });
+
+            if (response.ok) {
+                alert("Новость отправлена на рассмотрение!");
+                window.location.href = "/";
+            } else {
+                alert("Ошибка при отправке новости");
+            }
+        });
+    </script>
+</body>

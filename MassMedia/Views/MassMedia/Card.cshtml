@@ -1,0 +1,11 @@
+﻿@model MassMedia.DataAccess.Entities.MassMediaEntity
+
+<div class="card bg-dark text-light shadow-lg rounded-4 overflow-hidden h-100">
+    <img src="@Model.ImageUrl" class="card-img-top object-fit-cover" style="max-height: 200px;" alt="@Model.Title" />
+
+    <div class="card-body">
+        <h5 class="card-title">@Model.Title</h5>
+
+        <a href="/Mass-Media/@(Model.Id)" class="btn btn-outline-light w-100 mt-3">Новости станции</a>
+    </div>
+</div>

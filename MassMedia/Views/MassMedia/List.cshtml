@@ -1,0 +1,33 @@
+﻿@model IEnumerable<MassMedia.DataAccess.Entities.MassMediaEntity>
+
+@{
+    ViewData["Title"] = "Список станций";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+<style>
+    body {
+        background-color: #121212;
+        color: #e0e0e0;
+    }
+
+    .card-img-top {
+        object-fit: cover;
+    }
+</style>
+
+@if (Model.Count() == 0)
+{
+    <h3 class="text-center mt-4">СМИ нет</h3>
+}
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    @foreach (var station in Model)
+    {
+        <div class="col">
+            @Html.Partial("~/Views/MassMedia/Card.cshtml", station)
+        </div>
+    }
+</div>
